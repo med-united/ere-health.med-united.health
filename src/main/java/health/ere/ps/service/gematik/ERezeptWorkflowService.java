@@ -496,7 +496,7 @@ public class ERezeptWorkflowService {
                 signRequest.setOptionalInputs(optionalInputs);
                 signRequest.setRequestID(UUID.randomUUID().toString());
                 signRequest.setDocument(document);
-                signRequest.setIncludeRevocationInfo(true);
+                signRequest.setIncludeRevocationInfo(appConfig.includeRevocationInfoEnabled());
                 return signRequest;
             }).collect(Collectors.toList());
 
@@ -986,7 +986,7 @@ public class ERezeptWorkflowService {
                                  .header("Authorization", "Bearer " + parameterBearerToken)
                                  .get()
             ) {
-            if (response.getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
+            if (response.getStatus() == Response.Status.OK.getStatusCode()) {
                 return true;
             } else {
                 return false;

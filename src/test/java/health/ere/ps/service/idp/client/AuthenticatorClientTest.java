@@ -9,6 +9,7 @@ import javax.ws.rs.core.Response;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.jboss.logging.Logger;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import health.ere.ps.config.AppConfig;
@@ -39,6 +40,7 @@ class AuthenticatorClientTest {
     AppConfig appConfig;
 
     @Test
+    @Tag("titus")
     void test_Successful_Authorization_Request() throws IdpClientException, IdpException {
         AuthenticatorClient authenticatorClient = new AuthenticatorClient();
 

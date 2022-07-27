@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(PkiKeyResolver.class)
+@Disabled
 public class MockIdpClientTest {
 
     private static final String URI_IDP_SERVER = "https://idp.zentral.idp.splitdns.ti-dienste.de";

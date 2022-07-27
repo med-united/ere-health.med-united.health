@@ -132,6 +132,10 @@ public class MassGenerator2Test {
         createERezeptMassCreateBatch("src/test/resources/manuels-egk/egk.txt", null, "../secret-test-print-samples/CIDA/templates/", true);
     }
     @Test
+    void testCreateERezeptMassCreateCIDA() throws Exception {
+        createERezeptMassCreateBatch("../secret-test-print-samples/CIDA/egk/cards.txt", null, "../secret-test-print-samples/CIDA/templates/", true);
+    }
+    @Test
     void testCreateERezeptMassCGMLauer() throws Exception {
         createERezeptMassCreate("src/test/resources/manuels-egk/egk.txt", "../secret-test-print-samples/CGM-Lauer/insurance.txt", "../secret-test-print-samples/CGM-Lauer/templates/");
     }
@@ -336,11 +340,11 @@ public class MassGenerator2Test {
         DocumentService documentService = new DocumentService();
                 documentService.init();
         
-        List<String> cards = cardsString != null ? Files.readAllLines(Paths.get(cardsString)) : Arrays.asList(new String[] {"X110470337"});
+        List<String> cards = cardsString != null ? Files.readAllLines(Paths.get(cardsString)) : Arrays.asList(new String[] {"X110478118"});
 
         RuntimeConfig runtimeConfig = getRuntimeConfig();
 
-        eRezeptWorkflowService.activateComfortSignature(runtimeConfig);
+        // eRezeptWorkflowService.activateComfortSignature(runtimeConfig);
         String thisMomentString = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH_mm_ssX")
                                 .withZone(ZoneOffset.UTC)
                                 .format(Instant.now());
@@ -481,8 +485,8 @@ public class MassGenerator2Test {
                         
                         i++;
                         if((i % 8) == 0) {
-                            eRezeptWorkflowService.deactivateComfortSignature(runtimeConfig);
-                            eRezeptWorkflowService.activateComfortSignature(runtimeConfig);
+                            //eRezeptWorkflowService.deactivateComfortSignature(runtimeConfig);
+                            //eRezeptWorkflowService.activateComfortSignature(runtimeConfig);
                         }
                     }
                 } catch (Exception ex) {
@@ -494,7 +498,7 @@ public class MassGenerator2Test {
                 // break;
             }
         }
-        eRezeptWorkflowService.deactivateComfortSignature(runtimeConfig);
+        //eRezeptWorkflowService.deactivateComfortSignature(runtimeConfig);
         fw.close();
     }
 
