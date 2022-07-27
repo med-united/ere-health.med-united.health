@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   push:
-    branches: [main]
+    branches: [feature/ERE-559-go-ere-health]
 
 jobs:
   build:
@@ -29,7 +29,7 @@ jobs:
           ECR_REPOSITORY: ere-health
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          mvn package -DskipTests
+          mvn package
           docker build -f src/main/docker/Dockerfile.jvm -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
