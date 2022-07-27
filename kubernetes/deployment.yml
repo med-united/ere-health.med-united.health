@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ere-health
+  labels:
+    app: ere-health
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ere-health
+  template:
+    metadata:
+      labels:
+        app: ere-health
+    spec:
+      containers:
+        - name: ere-health
+          image: 765415433338.dkr.ecr.eu-central-1.amazonaws.com/ere-health:$IMAGE_TAG
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8080
+
+---
+
+kind: Service
+apiVersion: v1
+metadata:
+  name: ere-health
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 22
+      targetPort: 22
+      name: ssh
+    - port: 8080
+      targetPort: 8080
+      name: http
+  selector:
+    app: ere-health

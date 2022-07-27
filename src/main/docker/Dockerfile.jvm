@@ -51,4 +51,4 @@ COPY --chown=1001 target/quarkus-app/quarkus/ /deployments/quarkus/
 EXPOSE 8080
 USER 1001
 
-ENTRYPOINT [ "/deployments/run-java.sh" ]
+ENTRYPOINT [ "/usr/bin/java", "-Dquarkus.profile=PU", "-jar", "/deployments/quarkus-run.jar" ]
