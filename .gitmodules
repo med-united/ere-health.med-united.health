@@ -1,4 +1,5 @@
 [submodule "src/main/resources/META-INF/resources/frontend"]
 	path = src/main/resources/META-INF/resources/frontend
 	url = https://github.com/med-united/frontend-ere-health.med-united.health
-	branch = main
+	branch = feature/ERE-559-go-ere-health
+
