@@ -4,10 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.json.bind.annotation.JsonbTransient;
 import javax.websocket.Session;
-import javax.xml.bind.annotation.XmlTransient;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class SSHConnectionOfferingEvent implements Serializable {
 
@@ -97,8 +95,7 @@ public class SSHConnectionOfferingEvent implements Serializable {
         this.idpClientId = idpClientId;
     }
 
-    @JsonIgnore
-    @XmlTransient
+    @JsonbTransient
     public Session getSession() {
         return this.session;
     }

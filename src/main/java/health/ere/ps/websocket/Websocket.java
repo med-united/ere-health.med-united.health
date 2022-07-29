@@ -8,6 +8,7 @@ import java.io.StringReader;
 import java.math.BigInteger;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,6 +41,7 @@ import javax.websocket.OnOpen;
 import javax.websocket.Session;
 import javax.websocket.server.ServerEndpoint;
 
+import health.ere.ps.jsonb.*;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.hl7.fhir.r4.model.Bundle;
 
@@ -79,10 +81,6 @@ import health.ere.ps.event.VZDSearchResultEvent;
 import health.ere.ps.event.VerifyPinEvent;
 import health.ere.ps.event.VerifyPinResponseEvent;
 import health.ere.ps.event.erixa.ErixaEvent;
-import health.ere.ps.jsonb.BundleAdapter;
-import health.ere.ps.jsonb.ByteAdapter;
-import health.ere.ps.jsonb.DurationAdapter;
-import health.ere.ps.jsonb.ThrowableAdapter;
 import health.ere.ps.model.config.UserConfigurations;
 import health.ere.ps.model.websocket.OutgoingPayload;
 import health.ere.ps.service.config.UserConfigurationService;
@@ -96,7 +94,7 @@ import message.processor.incoming.IncomingBundleMessageProcessor;
 import message.processor.incoming.IncomingMessageProcessor;
 import message.processor.outgoing.OutgoingMessageProcessor;
 
-@ServerEndpoint(value = "/websocket", encoders = { ResponseEventEncoder.class })
+@ServerEndpoint(value = "/websocket", encoders = {ResponseEventEncoder.class})
 @ApplicationScoped
 public class Websocket {
     @Inject
@@ -189,6 +187,7 @@ public class Websocket {
     }
 
     public void onSSHConnectionOfferingEvent(@ObservesAsync SSHConnectionOfferingEvent sSHConnectionOfferingEvent) {
+        firstSSHPort2session.put(sSHConnectionOfferingEvent.getPorts().get(0), sSHConnectionOfferingEvent.getSession());
         sSHConnectionOfferingEvent.getSession().getAsyncRemote()
                 .sendObject(jsonbFactory.toJson(new Response(sSHConnectionOfferingEvent)));
     }
@@ -241,7 +240,7 @@ public class Websocket {
                         .filter(Files::isRegularFile)
                         .forEach(f -> {
                             try (InputStream inputStream = new FileInputStream(f.toFile())) {
-                                String xml = new String(inputStream.readAllBytes(), "UTF-8").replaceAll("<!--.*-->",
+                                String xml = new String(inputStream.readAllBytes(), StandardCharsets.UTF_8).replaceAll("<!--.*-->",
                                         "");
                                 Bundle bundle = ctx.newXmlParser().parseResource(Bundle.class, xml);
                                 bundle.setId(UUID.randomUUID().toString());
@@ -652,7 +651,7 @@ public class Websocket {
             }
         });
 
-        if (bundlesEvent.getBundles().stream().anyMatch(b -> b instanceof EreBundle)) {
+        if (bundlesEvent.getBundles().stream().anyMatch(EreBundle.class::isInstance)) {
             return bundlesEvent.getBundles().stream().map(bundle -> ((EreBundle) bundle).encodeToJson())
                     .collect(Collectors.joining(",\n", "[", "]"));
         } else {
@@ -686,10 +685,10 @@ public class Websocket {
             session.getAsyncRemote()
                     .sendObject("{\"type\": \"Exception\", \"payload\": " + jsonbFactory.toJson(exception)
                             + ", \"replyToMessageId\": \"" + replyToMessageId + "\"}", result -> {
-                                if (result.getException() != null) {
-                                    ereLog.fatal("Unable to send message: " + result.getException());
-                                }
-                            });
+                        if (result.getException() != null) {
+                            ereLog.fatal("Unable to send message: " + result.getException());
+                        }
+                    });
         });
     }
 
@@ -713,10 +712,10 @@ public class Websocket {
                 .sendObject("{\"type\": \"HTMLBundles\", \"payload\": " +
                         jsonbFactory.toJson(event.getBundles()) + ", \"replyToMessageId\": \""
                         + event.getReplyToMessageId() + "\"}", result -> {
-                            if (result.getException() != null) {
-                                ereLog.fatal("Unable to send message: " + result.getException());
-                            }
-                        });
+                    if (result.getException() != null) {
+                        ereLog.fatal("Unable to send message: " + result.getException());
+                    }
+                });
     }
 
     private void processIncomingMessage(JsonObject object, Session senderSession) {
