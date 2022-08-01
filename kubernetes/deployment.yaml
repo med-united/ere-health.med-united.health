@@ -1,6 +1,37 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: external-dns
+spec:
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: external-dns
+  template:
+    metadata:
+      labels:
+        app: external-dns
+    spec:
+      containers:
+        - name: external-dns
+          image: k8s.gcr.io/external-dns/external-dns:v0.11.0
+          args:
+            - --source=service
+            - --source=ingress
+            - --domain-filter=med-united.health
+            - --provider=aws
+            - --registry=txt
+            - --txt-owner-id=default.med-united.health
+          env:
+            - name: AWS_DEFAULT_REGION
+              value: eu-central-1
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
   name: ere-health
   labels:
     app: ere-health
@@ -28,6 +59,8 @@ kind: Service
 apiVersion: v1
 metadata:
   name: ere-health
+  annotations:
+    external-dns.alpha.kubernetes.io/hostname: ere-health.med-united.health
 spec:
   type: LoadBalancer
   ports:
